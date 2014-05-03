@@ -163,7 +163,10 @@ void MessagePortBroadcaster::Broadcast(CFDataRef data, SInt32 channel)
     
     pthread_mutex_lock(&mListenerStructuresMutex);
 
-    listeners = (CFArrayRef)CFDictionaryGetValue(mListenerArraysByChannel, (void *)channel);
+    //HP TODO: Updated for 64-bit support without changing the interface
+    u_long ulChannel = channel;
+
+    listeners = (CFArrayRef)CFDictionaryGetValue(mListenerArraysByChannel, (void *)ulChannel);
     if (listeners) {
         listenerIndex = CFArrayGetCount(listeners);
     
@@ -233,7 +236,8 @@ void	MessagePortBroadcaster::AddListener(CFDataRef listenerIdentifierData)
     // No reply is necessary.
 
     const UInt8 *dataBytes;
-    UInt32 listenerIdentifier;
+    //HP TODO: Changed the following from UInt32 to unsigned long for 64-bit compatibility
+    u_long listenerIdentifier;
     CFStringRef listenerPortName;
     CFMessagePortRef remotePort;
 
@@ -252,6 +256,7 @@ void	MessagePortBroadcaster::AddListener(CFDataRef listenerIdentifierData)
         CFMessagePortSetInvalidationCallBack(remotePort, MessagePortWasInvalidated);
 
         pthread_mutex_lock(&mListenerStructuresMutex);
+
         CFDictionarySetValue(mListenersByIdentifier, (void *)listenerIdentifier, (void *)remotePort);
         CFDictionarySetValue(mIdentifiersByListener, (void *)remotePort, (void *)listenerIdentifier);
         pthread_mutex_unlock(&mListenerStructuresMutex);
@@ -274,8 +279,9 @@ void	MessagePortBroadcaster::ChangeListenerChannelStatus(CFDataRef messageData, 
     // No reply is necessary.
     
     const UInt8 *dataBytes;
-    UInt32 identifier;
-    SInt32 channel;
+    //HP TODO: Changed the following from UInt32 and SInt32 for 64-bit compatibility
+    u_long identifier;
+    long channel;
     CFMessagePortRef remotePort;
     CFMutableArrayRef channelListeners;
 
@@ -331,7 +337,8 @@ void MessagePortWasInvalidated(CFMessagePortRef messagePort, void *info)
 
 void	MessagePortBroadcaster::RemoveListenerWithRemotePort(CFMessagePortRef remotePort)
 {
-    UInt32 identifier;
+    //HP TODO: Changed the following from UInt32 for 64-bit compatibility
+    u_long identifier;
 
     pthread_mutex_lock(&mListenerStructuresMutex);
 

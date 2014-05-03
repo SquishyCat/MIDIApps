@@ -155,7 +155,7 @@
             ok = NSLocalizedStringFromTableInBundle(@"OK", @"SysExLibrarian", SMBundleForObject(self), "OK");
             cancel = NSLocalizedStringFromTableInBundle(@"Cancel", @"SysExLibrarian", SMBundleForObject(self), "Cancel");
             
-            returnCode2 = NSRunAlertPanel(title, message, ok, cancel, nil);
+            returnCode2 = NSRunAlertPanel(title, @"%@", ok, cancel, nil, message);
             [openPanel orderOut:nil];
             if (returnCode2 == NSAlertDefaultReturn) {
                 // Run the open sheet again
